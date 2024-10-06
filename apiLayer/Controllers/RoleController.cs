@@ -1,6 +1,10 @@
-﻿using coreLayer;
+﻿using apiLayer.Dto.Roles;
+using apiLayer.Dto.Users;
+using coreLayer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using serviceLayer.Roles;
+using System.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,16 +23,46 @@ namespace apiLayer.Controllers
 
         // GET: api/<RoleController>
         [HttpGet]
-        public IEnumerable<Role> Get()
+        public IEnumerable<RoleDto> Get()
         {
-            return _roleService.AllRoles();
+            return _roleService.AllRoles()
+                        .Select(r => new RoleDto
+                        {
+                            Id = r.Id,
+                            Name = r.Name,
+                            Users = r.Users.Select(u => new UserDto
+                            {
+                                Id = u.Id,
+                                Name = u.Name,
+                                Password = u.Password
+                            }).ToList()
+                        })
+                        .ToList();
+
         }
 
         // GET api/<RoleController>/5
         [HttpGet("{id}")]
-        public Role Get(int id)
+        public RoleDto? Get(int id)
         {
-            return _roleService.FindRoleById(id);
+            Role r = _roleService.FindRoleById(id);
+            if (r != null)
+            {
+
+            RoleDto rl = new RoleDto
+            {
+                Id = r.Id,
+                Name = r.Name,
+                Users = r.Users.Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    Password = u.Password
+                }).ToList()
+            };
+            return rl;
+            }
+            return null;
         }
 
         // POST api/<RoleController>
