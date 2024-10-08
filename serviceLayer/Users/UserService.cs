@@ -1,5 +1,6 @@
 ﻿using coreLayer;
 using dataLayer;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,12 +43,12 @@ namespace serviceLayer.Users
 
         public List<User> findAll()
         {
-            return _context.users.ToList();
+            return _context.users.Include(u => u.Rl).ToList();
         }
 
         public User findById(int id)
         {
-            User u = _context.users.Find(id);
+            User u = _context.users.Include(u => u.Rl).FirstOrDefault(u=>u.Id==id);
             return u;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using coreLayer;
 using dataLayer;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +27,12 @@ namespace serviceLayer.Roles
 
         public List<Role> AllRoles()
         {
-            return _context.roles.ToList();
+            return _context.roles.Include(r=>r.Users).ToList();
         }
 
         public Role FindRoleById(int roleId)
         {
-            return _context.roles.Find(roleId);
+            return _context.roles.Include(r => r.Users).FirstOrDefault(rr=>rr.Id ==roleId);
         }
     }
 }
